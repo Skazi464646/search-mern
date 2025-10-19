@@ -1,0 +1,74 @@
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:15-alpine
+    container_name: travel-search-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: travel_search
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d travel_search"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Database Management UI
+  adminer:
+    image: adminer:4-standalone
+    container_name: travel-search-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - database
+    environment:
+      ADMINER_DEFAULT_SERVER: database
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: travel-search-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://user:password@database:5432/travel_search
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      database:
+        condition: service_healthy
+    command: npm run dev
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: travel-search-web
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: http://localhost:3002/api/v1
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev
+
+volumes:
+  postgres_data:
