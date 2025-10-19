@@ -1,12 +1,15 @@
-FROM node:18-alpine
+FROM node:20-alpine
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl openssl-dev
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install dependencies (include dev deps for tsx)
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY . .
