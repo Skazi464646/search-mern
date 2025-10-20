@@ -211,7 +211,8 @@
 
 @media (max-width: 768px) {
   .nav {
-    display: none;
+    display: flex;
+    gap: 1rem;
   }
   
   .overlay {
@@ -234,5 +235,23 @@
   
   .menuHeader {
     padding: 2rem 1.5rem 1rem 1.5rem;
+  }
+  
+  .vkButton {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  
+  .notificationIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .notificationDot {
+    width: 6px;
+    height: 6px;
+    top: -1px;
+    right: -1px;
   }
 }
