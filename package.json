@@ -1,7 +1,7 @@
 {
   "name": "travel-search-monorepo",
   "version": "1.0.0",
-  "description": "FlyDubai-style travel experience search platform",
+  "description": "FlyDubai",
   "private": true,
   "workspaces": [
     "backend",
