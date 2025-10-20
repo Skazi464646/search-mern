@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSearchStore } from '../../store/searchStore';
 import styles from './Header.module.css';
 
@@ -8,7 +8,6 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onCategorySelect }) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { search } = useSearchStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,19 +49,26 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect }) => {
         </div>
         
         <nav className={styles.nav}>
-          <Link 
-            to="/" 
-            className={`${styles.navItem} ${location.pathname === '/' ? styles.active : ''}`}
-          >
-            Search
-          </Link>
-          <Link 
-            to="/results" 
-            className={`${styles.navItem} ${location.pathname === '/results' ? styles.active : ''}`}
-          >
-            Results
-          </Link>
-          <div className={styles.navItem}>VK</div>
+          <div className={styles.navItem}>
+            <div className={styles.notificationIcon}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+              </svg>
+              <div className={styles.notificationDot}></div>
+            </div>
+          </div>
+          
+          <div className={styles.navItem}>
+            <div className={styles.vkButton}>VK</div>
+          </div>
+          
+          <div className={styles.navItem}>
+            <div className={styles.gridIcon}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+              </svg>
+            </div>
+          </div>
         </nav>
       </header>
 
