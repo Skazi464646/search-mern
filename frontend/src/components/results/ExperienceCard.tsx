@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import type { Experience } from '../../types';
 import styles from './ExperienceCard.module.css';
 
@@ -7,20 +7,30 @@ interface ExperienceCardProps {
   onClick?: (experience: Experience) => void;
 }
 
+// Memoize the price formatter to avoid recreating on every render
+const priceFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, onClick }) => {
-  const handleClick = () => {
+  // Memoize the click handler to avoid recreating on every render
+  const handleClick = useCallback(() => {
     if (onClick) {
       onClick(experience);
     }
-  };
+  }, [onClick, experience]);
 
-  const formatPrice = (price?: number) => {
-    if (!price) return null;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
-  };
+  // Memoize formatted price to avoid recalculating on every render
+  const formattedPrice = useMemo(() => {
+    if (!experience.price) return null;
+    return priceFormatter.format(experience.price);
+  }, [experience.price]);
+
+  // Memoize badge classes to avoid recalculating on every render
+  const badgeClasses = useMemo(() => {
+    return `${styles.badge} ${experience.featured ? styles.featuredBadge : ''}`;
+  }, [experience.featured]);
 
   return (
     <div className={styles.card} onClick={handleClick}>
@@ -30,8 +40,9 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, onClick }) 
           alt={experience.title}
           className={styles.image}
           loading="lazy"
+          decoding="async"
         />
-        <div className={`${styles.badge} ${experience.featured ? styles.featuredBadge : ''}`}>
+        <div className={badgeClasses}>
           {experience.category}
         </div>
       </div>
@@ -49,8 +60,8 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, onClick }) 
           </div>
           
           <div className={styles.metadata}>
-            {experience.price && (
-              <div className={styles.price}>{formatPrice(experience.price)}</div>
+            {formattedPrice && (
+              <div className={styles.price}>{formattedPrice}</div>
             )}
           </div>
         </div>
@@ -59,7 +70,8 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, onClick }) 
   );
 };
 
-export const ExperienceCardSkeleton: React.FC = () => {
+// Memoize the skeleton component as it's static
+export const ExperienceCardSkeleton: React.FC = React.memo(() => {
   return (
     <div className={styles.loadingCard}>
       <div className={styles.loadingImage}></div>
@@ -73,6 +85,18 @@ export const ExperienceCardSkeleton: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
-export default ExperienceCard;
+ExperienceCardSkeleton.displayName = 'ExperienceCardSkeleton';
+
+// Memoize the main component to prevent unnecessary re-renders
+// Only re-render if experience or onClick props change
+export default React.memo(ExperienceCard, (prevProps, nextProps) => {
+  return (
+    prevProps.experience.id === nextProps.experience.id &&
+    prevProps.experience.title === nextProps.experience.title &&
+    prevProps.experience.price === nextProps.experience.price &&
+    prevProps.experience.featured === nextProps.experience.featured &&
+    prevProps.onClick === nextProps.onClick
+  );
+});

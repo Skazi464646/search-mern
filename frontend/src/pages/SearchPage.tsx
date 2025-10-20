@@ -14,6 +14,8 @@ const SearchPage: React.FC = () => {
     navigate('/results');
   };
 
+  // throw new Error();
+
   return (
     <div className={styles.searchPage}>
       <Header />

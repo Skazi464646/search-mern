@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchStore } from '../../store/searchStore';
 import styles from './SearchBar.module.css';
 
@@ -6,6 +6,64 @@ interface SearchBarProps {
   onSearch?: (query: string) => void;
   placeholder?: string;
 }
+
+// Debounce utility function moved outside component to avoid recreation
+function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: number | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+// Memoize search icon SVG to avoid recreation
+const SearchIcon = React.memo(() => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="m19.6 21l-6.3-6.3q-.75.6-1.725.95Q10.6 16 9.5 16q-3.35 0-5.675-2.325Q1.5 11.35 1.5 8q0-3.35 2.325-5.675Q6.15 0 9.5 0q3.35 0 5.675 2.325Q17.5 4.65 17.5 8q0 1.1-.35 2.075q-.35.975-.95 1.725l6.3 6.3zM9.5 14q2.5 0 4.25-1.75T15.5 8q0-2.5-1.75-4.25T9.5 2Q7 2 5.25 3.75T3.5 8q0 2.5 1.75 4.25T9.5 14z" />
+  </svg>
+));
+
+SearchIcon.displayName = 'SearchIcon';
+
+// Memoize filter icon SVG to avoid recreation
+const FilterIcon = React.memo(() => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M7 6h10l-5.01 6.3L7 6z" />
+  </svg>
+));
+
+FilterIcon.displayName = 'FilterIcon';
+
+// Memoize individual suggestion items for better performance
+interface SuggestionItemProps {
+  suggestion: string;
+  isHighlighted: boolean;
+  onClick: (suggestion: string) => void;
+}
+
+const SuggestionItem = React.memo<SuggestionItemProps>(({ suggestion, isHighlighted, onClick }) => {
+  const handleClick = useCallback(() => {
+    onClick(suggestion);
+  }, [onClick, suggestion]);
+
+  const className = useMemo(() => {
+    return `${styles.suggestionItem} ${isHighlighted ? styles.highlighted : ''}`;
+  }, [isHighlighted]);
+
+  return (
+    <div
+      className={className}
+      onClick={handleClick}
+    >
+      {suggestion}
+    </div>
+  );
+});
+
+SuggestionItem.displayName = 'SuggestionItem';
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
@@ -24,9 +82,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
     search
   } = useSearchStore();
 
-  // Debounced autocomplete
-  const debouncedAutocomplete = useCallback(
-    debounce((query: string) => {
+  // Memoize debounced autocomplete function to prevent recreation on every render
+  const debouncedAutocomplete = useMemo(
+    () => debounce((query: string) => {
       if (query.length >= 2) {
         autocomplete(query);
       }
@@ -43,13 +101,39 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   }, [inputValue, debouncedAutocomplete]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Memoize input change handler
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
     setHighlightedIndex(-1);
-  };
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  // Memoize suggestion selection handler
+  const handleSuggestionSelect = useCallback((suggestion: string) => {
+    setInputValue(suggestion);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+
+    // Perform search immediately
+    search({ q: suggestion.trim(), limit: 10, offset: 0 });
+    if (onSearch) {
+      onSearch(suggestion.trim());
+    }
+  }, [search, onSearch]);
+
+  // Memoize search handler
+  const handleSearch = useCallback(async (query: string) => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      await search({ q: trimmedQuery, limit: 10, offset: 0 });
+      if (onSearch) {
+        onSearch(trimmedQuery);
+      }
+    }
+  }, [search, onSearch]);
+
+  // Memoize keyboard handler
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSuggestions || suggestions.length === 0) {
       if (e.key === 'Enter') {
         handleSearch(inputValue);
@@ -81,23 +165,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setHighlightedIndex(-1);
         break;
     }
-  };
+  }, [showSuggestions, suggestions.length, inputValue, highlightedIndex, handleSearch, handleSuggestionSelect]);
 
-  const handleSuggestionSelect = (suggestion: string) => {
-    setInputValue(suggestion);
-    setShowSuggestions(false);
-    setHighlightedIndex(-1);
-    handleSearch(suggestion);
-  };
-
-  const handleSearch = async (query: string) => {
-    if (query.trim()) {
-      await search({ q: query.trim(), limit: 10, offset: 0 });
-      if (onSearch) {
-        onSearch(query.trim());
-      }
-    }
-  };
+  // Memoize search button click handler
+  const handleSearchClick = useCallback(() => {
+    handleSearch(inputValue);
+  }, [handleSearch, inputValue]);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -115,13 +188,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Memoize suggestions list to prevent recreation on every render
+  const suggestionsList = useMemo(() => {
+    if (!showSuggestions || suggestions.length === 0) return null;
+
+    return (
+      <div ref={suggestionsRef} className={styles.suggestionsDropdown}>
+        {suggestions.map((suggestion, index) => (
+          <SuggestionItem
+            key={suggestion}
+            suggestion={suggestion}
+            isHighlighted={index === highlightedIndex}
+            onClick={handleSuggestionSelect}
+          />
+        ))}
+      </div>
+    );
+  }, [showSuggestions, suggestions, highlightedIndex, handleSuggestionSelect]);
+
   return (
     <div className={styles.searchContainer}>
       <div className={styles.searchWrapper}>
         <div className={styles.searchIcon}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="m19.6 21l-6.3-6.3q-.75.6-1.725.95Q10.6 16 9.5 16q-3.35 0-5.675-2.325Q1.5 11.35 1.5 8q0-3.35 2.325-5.675Q6.15 0 9.5 0q3.35 0 5.675 2.325Q17.5 4.65 17.5 8q0 1.1-.35 2.075q-.35.975-.95 1.725l6.3 6.3zM9.5 14q2.5 0 4.25-1.75T15.5 8q0-2.5-1.75-4.25T9.5 2Q7 2 5.25 3.75T3.5 8q0 2.5 1.75 4.25T9.5 14z" />
-          </svg>
+          <SearchIcon />
         </div>
 
         <input
@@ -141,43 +230,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
         <button
           className={styles.filterButton}
-          onClick={() => handleSearch(inputValue)}
+          onClick={handleSearchClick}
           type="button"
+          aria-label="Search"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7 6h10l-5.01 6.3L7 6z" />
-          </svg>
+          <FilterIcon />
         </button>
       </div>
 
-      {showSuggestions && suggestions.length > 0 && (
-        <div ref={suggestionsRef} className={styles.suggestionsDropdown}>
-          {suggestions.map((suggestion, index) => (
-            <div
-              key={suggestion}
-              className={`${styles.suggestionItem} ${index === highlightedIndex ? styles.highlighted : ''
-                }`}
-              onClick={() => handleSuggestionSelect(suggestion)}
-            >
-              {suggestion}
-            </div>
-          ))}
-        </div>
-      )}
+      {suggestionsList}
     </div>
   );
 };
 
-// Debounce utility function
-function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: any;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
-
-export default SearchBar;
+// Memoize the SearchBar component to prevent unnecessary re-renders
+// Only re-render if onSearch or placeholder props change
+export default React.memo(SearchBar, (prevProps, nextProps) => {
+  return (
+    prevProps.onSearch === nextProps.onSearch &&
+    prevProps.placeholder === nextProps.placeholder
+  );
+});
