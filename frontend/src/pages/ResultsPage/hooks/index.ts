@@ -1,0 +1,1 @@
+export { useResultsPage } from './useResultsPage';
