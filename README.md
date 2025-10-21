@@ -62,7 +62,9 @@
 
 ## 🏗️ Architecture
 
+### Architecture Flow Diagram
 ![Architecture Flow Diagram](./frontend/public/Archiecture-flow-diagram.png)
+### Application User Flow Diagram
 ![Application User Flow Diagram](./frontend/public/%20Application-user-flow.png)
 
 ### System Overview
