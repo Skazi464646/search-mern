@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '@/database/client';
 
 export class HealthController {
-  async check(req: Request, res: Response): Promise<void> {
+  async check(_req: Request, res: Response): Promise<void> {
     try {
       // Check database connection
       await prisma.$queryRaw`SELECT 1`;

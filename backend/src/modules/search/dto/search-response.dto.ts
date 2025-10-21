@@ -1,13 +1,15 @@
 export interface ExperienceDto {
-  id: string | number;
+  id: string;
   title: string;
   description: string;
   imageUrl: string;
   destination: string;
   category: string;
-  price?: number;
-  duration?: string;
+  price: number | null;
+  duration: string | null;
   featured: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SearchResponseDto {

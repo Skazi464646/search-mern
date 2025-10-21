@@ -20,9 +20,11 @@ export class SearchService {
         imageUrl: exp.imageUrl,
         destination: exp.destination,
         category: exp.category,
-        price: exp.price || 0,
-        duration: exp.duration || '',
-        featured: exp.featured
+        price: exp.price,
+        duration: exp.duration,
+        featured: exp.featured,
+        createdAt: exp.createdAt,
+        updatedAt: exp.updatedAt
       }));
 
       return {
