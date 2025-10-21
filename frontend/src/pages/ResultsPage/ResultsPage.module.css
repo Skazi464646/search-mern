@@ -1,6 +1,7 @@
 .resultsPage {
   min-height: 100vh;
   background-color: #f8fafc;
+  padding-top: 80px; /* Account for fixed header */
 }
 
 .container {
@@ -194,6 +195,10 @@
 }
 
 @media (max-width: 768px) {
+  .resultsPage {
+    padding-top: 70px; /* Smaller header height on mobile */
+  }
+  
   .container {
     padding: 1rem;
   }

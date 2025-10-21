@@ -5,7 +5,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   width: 100%;
   position: fixed;
   top: 0;
@@ -13,8 +13,14 @@
   right: 0;
   z-index: 1000;
   backdrop-filter: blur(10px);
-  background-color: rgba(30, 58, 138, 0.95);
+  background-color: rgba(30, 58, 138, 0.98);
   transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header:hover {
+  background-color: rgba(30, 58, 138, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -135,7 +141,7 @@
   height: 100vh;
   width: 320px;
   background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  z-index: 9999;
+  z-index: 10000;
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
@@ -233,6 +239,11 @@
 }
 
 @media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
   .nav {
     display: flex;
     gap: 1rem;
@@ -246,13 +257,13 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 99998;
+    z-index: 9999;
     backdrop-filter: blur(2px);
   }
   
   .slideMenu {
     width: 100vw;
-    z-index: 99999;
+    z-index: 10000;
     box-shadow: none;
   }
   
