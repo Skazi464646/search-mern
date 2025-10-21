@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { SearchStore, SearchParams, Pagination } from '@/shared/types';
-import { apiService } from '@/shared/services';
+import type { SearchStore, SearchParams, Pagination } from '@/types';
+import { apiService } from '@/lib/api';
 
 const initialPagination: Pagination = {
   total: 0,

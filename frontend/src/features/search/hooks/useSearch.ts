@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSearchStore } from '@/shared/store';
-import type { SearchParams } from '@/shared/types';
+import { useSearchStore } from '@/stores';
+import type { SearchParams } from '@/types';
 
 /**
  * Custom hook for search functionality

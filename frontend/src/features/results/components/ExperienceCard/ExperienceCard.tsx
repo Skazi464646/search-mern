@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import type { Experience } from '@/shared/types';
+import type { Experience } from '@/types';
 import styles from './ExperienceCard.module.css';
 
 interface ExperienceCardProps {

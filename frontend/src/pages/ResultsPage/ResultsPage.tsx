@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSearchStore } from '@/shared/store';
+import { useSearchStore } from '@/stores';
 import { Header } from '@/components/layout';
 import { SearchBar } from '@/features/search';
 import { ExperienceCard, ExperienceCardSkeleton } from '@/features/results';
-import type { Experience } from '@/shared/types';
+import type { Experience } from '@/types';
 import styles from './ResultsPage.module.css';
 
 const ResultsPage: React.FC = () => {

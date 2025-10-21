@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSearchStore } from '@/shared/store';
+import { useSearchStore } from '@/stores';
 import { SearchBar } from '@/features/search';
 import { Header } from '@/components/layout';
 import styles from './SearchPage.module.css';

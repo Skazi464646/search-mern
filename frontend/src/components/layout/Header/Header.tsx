@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
-import { useSearchStore } from '@/shared';
+import { useSearchStore } from '@/stores';
 
 interface HeaderProps {
   onCategorySelect?: (category: string) => void;

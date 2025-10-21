@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSearchStore } from '@/shared/store';
-import type { Experience } from '@/shared/types';
+import { useSearchStore } from '@/stores';
+import type { Experience } from '@/types';
 
 export const useResultsNavigation = () => {
   const navigate = useNavigate();

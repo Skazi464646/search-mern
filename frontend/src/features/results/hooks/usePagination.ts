@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useSearchStore } from '@/shared/store';
+import { useSearchStore } from '@/stores';
 
 export const usePagination = () => {
   const { search, query, pagination } = useSearchStore();

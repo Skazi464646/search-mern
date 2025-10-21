@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSearchStore } from '@/shared/store';
+import { useSearchStore } from '@/stores';
 import { useResultsNavigation } from '../../hooks';
 import { ExperienceCard, ExperienceCardSkeleton } from '../ExperienceCard';
 import styles from './ResultsGrid.module.css';

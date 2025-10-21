@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { useSearchStore } from '@/shared/store';
+import { useSearchStore } from '@/stores';
 
 /**
  * Custom hook for autocomplete functionality

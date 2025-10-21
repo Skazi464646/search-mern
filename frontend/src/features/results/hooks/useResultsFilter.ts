@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useSearchStore } from '@/shared/store';
+import { useSearchStore } from '@/stores';
 
 export const useResultsFilter = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');

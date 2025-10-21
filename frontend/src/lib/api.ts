@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
-import type { SearchResponse, AutocompleteResponse, SearchParams } from '@/shared/types';
+import type { SearchResponse, AutocompleteResponse, SearchParams } from '@/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
