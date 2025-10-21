@@ -62,6 +62,9 @@
 
 ## 🏗️ Architecture
 
+![Architecture Flow Diagram](./frontend/public/Archiecture-flow-diagram.png)
+![Application User Flow Diagram](./frontend/public/%20Application-user-flow.png)
+
 ### System Overview
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -86,6 +89,8 @@ Pages ──▶ Features ──▶ Components ──▶ Hooks ──▶ Stores �
 Route      Business     Reusable     Custom    Global    HTTP
 Level      Features      UI Parts    Logic     State     Client
 ```
+
+
 
 ## 🚀 Getting Started
 
