@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect }) => {
           </div>
           
           <div className={styles.navItem}>
-            <div className={styles.userButton}>VK</div>
+            <div className={styles.userButton}>SB</div>
           </div>
         </nav>
       </header>
