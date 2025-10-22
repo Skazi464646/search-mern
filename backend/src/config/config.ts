@@ -16,7 +16,9 @@ const configSchema = z.object({
 const env = {
   nodeEnv: process.env.NODE_ENV,
   port: process.env.PORT,
-  databaseUrl: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/travel_search',
+  databaseUrl: process.env.DATABASE_URL || (() => {
+    throw new Error('DATABASE_URL environment variable is required');
+  })(),
   cors: {
     origin: process.env.CORS_ORIGIN,
   },
