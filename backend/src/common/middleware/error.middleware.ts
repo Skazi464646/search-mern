@@ -18,7 +18,21 @@ export const errorMiddleware = (
   res: Response,
   _next: NextFunction
 ): void => {
-  console.error('Error:', err);
+  // Safe logging based on environment
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (!isProduction) {
+    console.error('Error:', err);
+  } else {
+    // Only log essential information in production
+    console.error('Error occurred:', { 
+      path: req.path, 
+      method: req.method,
+      timestamp: new Date().toISOString(),
+      errorType: err.name,
+      userAgent: req.get('User-Agent')
+    });
+  }
 
   if (err instanceof ApiError) {
     res.status(err.statusCode).json({
