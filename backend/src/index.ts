@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config } from '@/config/config';
 import { errorMiddleware } from '@/common/middleware/error.middleware';
+import { sanitizeMiddleware } from '@/common/middleware/sanitization.middleware';
 import { searchRouter } from '@/modules/search/search.routes';
 import { healthRouter } from '@/modules/health/health.routes';
 
@@ -27,6 +28,9 @@ app.use(limiter);
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Input sanitization (after body parsing, before routes)
+app.use(sanitizeMiddleware);
 
 // Routes
 app.use('/api/v1/search', searchRouter);
