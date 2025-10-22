@@ -4,8 +4,8 @@ import { prisma } from '@/database/client';
 export class HealthController {
   async check(_req: Request, res: Response): Promise<void> {
     try {
-      // Check database connection
-      await prisma.$queryRaw`SELECT 1`;
+      // Check database connection using safe query method
+      await prisma.$executeRaw`SELECT 1`;
       
       res.json({
         success: true,
