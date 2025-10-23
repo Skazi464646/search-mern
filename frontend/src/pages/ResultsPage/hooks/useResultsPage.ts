@@ -128,11 +128,14 @@ export const useResultsPage = () => {
   // Memoized pagination button handlers
   const handlePrevPage = useCallback(() => {
     handlePageChange(pagination.offset - pagination.limit);
+     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [handlePageChange, pagination.offset, pagination.limit]);
 
   const handleNextPage = useCallback(() => {
     handlePageChange(pagination.offset + pagination.limit);
+     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [handlePageChange, pagination.offset, pagination.limit]);
+  
 
   const handlePageClick = useCallback((page: number) => {
     handlePageChange((page - 1) * pagination.limit);

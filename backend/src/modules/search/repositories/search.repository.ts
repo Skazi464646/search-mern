@@ -2,13 +2,34 @@ import { PrismaClient } from '@prisma/client';
 import { SearchQueryDto } from '../dto/search-query.dto';
 import { ExperienceDto } from '../dto/search-response.dto';
 
+// Interface for experience selection in suggestions
+interface ExperienceSelect {
+  title: string;
+  destination: string;
+  category: string;
+}
+
+// Type for where clause - using a more generic approach
+type WhereClause = {
+  OR?: Array<{
+    OR: Array<{
+      title?: { contains: string; mode: 'insensitive' };
+      description?: { contains: string; mode: 'insensitive' };
+      destination?: { contains: string; mode: 'insensitive' };
+      category?: { contains: string; mode: 'insensitive' };
+    }>;
+  }>;
+  category?: { contains: string; mode: 'insensitive' };
+  featured?: boolean;
+};
+
 export class SearchRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async findByQuery(query: SearchQueryDto): Promise<ExperienceDto[]> {
     const searchTerms = query.q.toLowerCase().split(' ').filter(term => term.length > 0);
     
-    const whereClause: any = {
+    const whereClause: WhereClause = {
       OR: searchTerms.map(term => ({
         OR: [
           { title: { contains: term, mode: 'insensitive' } },
@@ -41,7 +62,7 @@ export class SearchRepository {
   async countByQuery(query: SearchQueryDto): Promise<number> {
     const searchTerms = query.q.toLowerCase().split(' ').filter(term => term.length > 0);
     
-    const whereClause: any = {
+    const whereClause: WhereClause = {
       OR: searchTerms.map(term => ({
         OR: [
           { title: { contains: term, mode: 'insensitive' } },
@@ -86,7 +107,7 @@ export class SearchRepository {
 
     const suggestions = new Set<string>();
     
-    experiences.forEach((exp:any) => {
+    experiences.forEach((exp: ExperienceSelect) => {
       if (exp.title.toLowerCase().includes(searchTerm)) {
         suggestions.add(exp.title);
       }
